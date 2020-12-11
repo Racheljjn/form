@@ -32,11 +32,9 @@ class App extends Component {
 
   submitHandler=(e)=>{
     e.preventDefault()
-    console.log(this.state);
     let newObj = {...this.state}
     delete newObj.outdated;
     // newObj = { date: "2020-11-27", IGB: "30", IGB_A: "20", IGB_B: "10", MJJ: "60", MJJ_A: "30", MJJ_F: "20" }
-    console.log(newObj);
     axios.post(`http://localhost/server/demo.php`, JSON.stringify(newObj))
     .then(res=>console.log(res))
     .catch(err=>{
@@ -54,10 +52,6 @@ class App extends Component {
   
   }
 
-  
-
-
-  
 
   fetchData = async() =>{
     let currentDate = "2020-11-26"
@@ -65,30 +59,21 @@ class App extends Component {
 
      const result = await fetch(`https://purposecloud.s3.amazonaws.com/challenge-data.json`)
       const data = await result.json()
-      console.log(data);
+      // refactoring data
       const allArray = Object.entries(data)
   
       const newAllArray = allArray.map(item =>{
         
         return [item[0], item[1].name, item[1].series,  item[1].aum]
       })
-      
-       
-
 
       let outdated = newAllArray.filter(item =>{
         return Object.entries(item[2]).every(piece=> {return new Date(piece[1].latest_nav.date).getTime() < new Date(currentDate).getTime() ? piece : null})
 
       } ).filter(item => item.length > 0)
 
-      console.log(outdated);
-     
-
       outdated = outdated.map(fund => {
-        console.log(fund)
-
-
-        return [fund[0], Object.keys(fund[2]),fund[1].en ]
+       return [fund[0], Object.keys(fund[2]),fund[1].en ]
       })
 
       this.setState({outdated})
@@ -122,7 +107,7 @@ class App extends Component {
                     
                     {item[1].map((n,key) => {
                     return <div>
-                       <li>{n}</li>
+                       <li key={key}>{n}</li>
                        <input type="text" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}_${n}`} placeholder="type new nav" required />
                     </div>})}                   
                     </ul>                  
