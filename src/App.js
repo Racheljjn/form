@@ -101,14 +101,14 @@ class App extends Component {
           outdated.map((item,index) =>{
             return <div>
                   <p>{`${item[2]}-${item[0]}`}</p>
-                  <input type="number" step="any" name={item[0]} onChange={this.handleAUMChange}  value={this.state.index} placeholder="type new aum"/>
+                  <input type="number" step="any" name={item[0]} onChange={this.handleAUMChange}  value={this.state.index} placeholder="type new aum" required/>
                   
                    <ul>
                     
                     {item[1].map((n,key) => {
                     return <div>
                        <li key={key}>{n}</li>
-                       <input type="number" step="any" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}__${n}`} placeholder="type new nav" />
+                       <input type="number" step="any" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}__${n}`} placeholder="type new nav" required />
                     </div>})}                   
                     </ul>                  
               </div>
