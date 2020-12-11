@@ -19,14 +19,14 @@ class App extends Component {
   handleAUMChange=(e)=>{
     e.preventDefault()
     this.setState({
-      [e.target.name]:e.target.value
+      [e.target.name]:Number(e.target.value.trim())
     })
 
   }
   handleNAVChange=(e)=>{
   e.preventDefault()
     this.setState({
-      [e.target.name]:e.target.value
+      [e.target.name]:Number(e.target.value.trim())
     })
   }
 
@@ -95,20 +95,20 @@ class App extends Component {
       
       <form onSubmit={this.submitHandler}>
         
-        <input type="text" id="date" name="date" onChange={this.handleDateChange} value={this.state.date} placeholder="type new date" required/>
+        <input type="date" id="date" name="date" onChange={this.handleDateChange} value={this.state.date} placeholder="type new date" required/>
         <button type="submit">submit</button>
         {
           outdated.map((item,index) =>{
             return <div>
                   <p>{`${item[2]}-${item[0]}`}</p>
-                  <input type="text" name={item[0]} onChange={this.handleAUMChange}  value={this.state.index} placeholder="type new aum" required/>
+                  <input type="number" step="any" name={item[0]} onChange={this.handleAUMChange}  value={this.state.index} placeholder="type new aum"/>
                   
                    <ul>
                     
                     {item[1].map((n,key) => {
                     return <div>
                        <li key={key}>{n}</li>
-                       <input type="text" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}_${n}`} placeholder="type new nav" required />
+                       <input type="number" step="any" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}__${n}`} placeholder="type new nav" />
                     </div>})}                   
                     </ul>                  
               </div>

@@ -6,46 +6,77 @@ header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Ac
 // receive data posted from JS
 $data = json_decode(file_get_contents('php://input'), true);
 
+// $data =
+
+
 // create a list container for csv 
-$lis_new = [];
+$list_csv = [];
 foreach($data as $key => $value) {
   if ($key == "date"){
-    array_push($lis_new, array($value));
+    array_push($list_csv, array($value));
   } 
-  elseif (strpos($key, "_")){
-    array_push($lis_new, array('',$key,$value));
+  elseif (strpos($key, "__")){
+    array_push($list_csv, array('',$key,$value));
   }
   else{
-    array_push($lis_new, array("Fund_name (" . $key . ")",$value));
+    array_push($list_csv, array("Fund_name (" . $key . ")",$value));
   }
   
 }
 
-print_r($lis_new);
-
-
 $fp = fopen('file.csv', 'w');
 
-foreach ($lis_new as $fields) {
+foreach ($list_csv as $fields) {
     fputcsv($fp, $fields);
 }
 
 fclose($fp);
 
 // download file from url
-// $url = 'https://purposecloud.s3.amazonaws.com/challenge-data.json'; 
-// $file_name = basename($url); 
-// $old_json = json_decode(gzuncompress(file_get_contents($url)));
-// // if(file_put_contents( $file_name,file_get_contents($url))) { 
-// //     echo "File downloaded successfully"; 
-// // } 
-// // else { 
-// //     echo "File downloading failed."; 
-// // }
-// foreach($old_json as $key => $value) {
-//  echo $key;
+$url = 'https://purposecloud.s3.amazonaws.com/challenge-data.json'; 
+$file_name = basename($url);
+$file = gzdecode(file_get_contents($url));
+$json_data = json_decode($file,true);
 
-// print_r($lis_new);
-//update json
+if(file_put_contents($file_name,$file)) { 
+    echo "File downloaded successfully at ".$file_name; 
+} 
+else { 
+    echo "File downloading failed."; 
+}
 
+// }
+//update json file
+foreach($data as $key => $value) {
+  if ($key == "date"){
+   // bypass the date row
+  } 
+  elseif (strpos($key, "__")){
+   // fund_series nav row
+    $parts = explode("__", $key);
+    $fund_id = $parts[0]; 
+    $series_id =  $parts[1];
+    $json_data[$fund_id]["series"][$series_id]["latest_nav"]["value"] = $value;
+    // update the last modified date as well for data sanity validation
+    $json_data[$fund_id]["series"][$series_id]["latest_nav"]["date"] =
+    $data["date"];
+    $json_data[$fund_id]["series"][$series_id]["last_modified"] =
+    $data["date"];
+  }
+  else{// fund_name aum row
+   $json_data[$key]["aum"]= $value;
+   // update the last modified date as well for data sanity validation
+   $json_data[$key]["last_modified"] = $data["date"];
+  }
+ }
+// save file to new path
+$updated_json_data = json_encode($json_data);
+$updated_file_name = "updated-".basename($url);
+
+if(file_put_contents($updated_file_name,$updated_json_data)) { 
+    echo "File updated successfully at ".$updated_file_name; 
+} 
+else { 
+    echo "File update failed."; 
+}
 ?>
