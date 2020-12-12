@@ -94,21 +94,23 @@ class App extends Component {
     return (
       
       <form onSubmit={this.submitHandler}>
-        
+        <label htmlFor="date" aria-label="date">Date: </label>
         <input type="date" id="date" name="date" onChange={this.handleDateChange} value={this.state.date} placeholder="type new date" required/>
         <button type="submit">submit</button>
         {
           outdated.map((item,index) =>{
             return <div>
                   <p>{`${item[2]}-${item[0]}`}</p>
-                  <input type="number" step="any" name={item[0]} onChange={this.handleAUMChange}  value={this.state.index} placeholder="type new aum" required/>
+                  <label htmlFor="AUM">AUM: </label>
+                  <input type="number" step="any" id="AUM" name={item[0]} onChange={this.handleAUMChange}  value={this.state.index} placeholder="type new aum" required/>
                   
                    <ul>
                     
                     {item[1].map((n,key) => {
                     return <div>
                        <li key={key}>{n}</li>
-                       <input type="number" step="any" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}__${n}`} placeholder="type new nav" required />
+                       <label htmlFor="NAV">NAV: </label>
+                       <input type="number" step="any" id="NAV" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}__${n}`} placeholder="type new nav" required />
                     </div>})}                   
                     </ul>                  
               </div>
