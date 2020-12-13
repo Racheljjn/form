@@ -110,7 +110,7 @@ class App extends Component {
                     
                     {item[1].map((n,key) => {
                     return <div>
-                       <li key={key}>{n}</li>
+                       <li className="series" key={key}>SeriesID: {n}</li>
                        <label htmlFor="NAV">NAV: </label>
                        <input type="number" step="any" id="NAV" value={this.state.key} onChange={this.handleNAVChange} name={`${item[0]}__${n}`} placeholder="type new nav" required />
                     </div>})}                   
