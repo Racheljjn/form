@@ -1,0 +1,30 @@
+body{
+ background-color:rgba(51,67,66,0.8);
+ font-family: 'Open Sans', sans-serif;
+ color: #fff;
+}
+input{
+ border:2px solid #ccc;
+ border-radius: 10px;
+ padding: 3px 10px;
+ font-family: 'Open Sans', sans-serif;
+
+ 
+}
+input:focus{
+ border: 2px solid #000;
+
+}
+button{
+ background-color: #343E3D;
+ border: none;
+ margin-left:20px;
+ padding: 5px 20px;
+ color: #fff;
+ border-radius: 10px;
+ cursor: pointer;
+}
+button:hover, button:focus{
+ background-color:#609174;
+}
+

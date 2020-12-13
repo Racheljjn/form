@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import './App.css'
 import axios from 'axios'
 
 class App extends Component {
@@ -92,7 +93,8 @@ class App extends Component {
   render() {
     const {outdated} = this.state
     return (
-      
+      <div>
+      <h1>Outdated Funds</h1>
       <form onSubmit={this.submitHandler}>
         <label htmlFor="date" aria-label="date">Date: </label>
         <input type="date" id="date" name="date" onChange={this.handleDateChange} value={this.state.date} placeholder="type new date" required/>
@@ -100,7 +102,7 @@ class App extends Component {
         {
           outdated.map((item,index) =>{
             return <div>
-                  <p>{`${item[2]}-${item[0]}`}</p>
+                  <h2>{`${item[2]}-${item[0]}`}</h2>
                   <label htmlFor="AUM">AUM: </label>
                   <input type="number" step="any" id="AUM" name={item[0]} onChange={this.handleAUMChange}  value={this.state.index} placeholder="type new aum" required/>
                   
@@ -116,9 +118,8 @@ class App extends Component {
               </div>
           })
         }
-
-
       </form>
+      </div>
     )
   }
 }
