@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import './App.css'
 import axios from 'axios'
 
+
+
+let currentDate = "2020-11-26"
 class App extends Component {
   constructor(){
     super()
@@ -13,7 +16,7 @@ class App extends Component {
   
   handleDateChange=(e)=>{
     e.preventDefault()
-    this.setState({date: e.target.value})
+    this.setState({date: e.target.value }) 
 
   }
 
@@ -42,6 +45,14 @@ class App extends Component {
       console.log(err)
     })
 
+    this.successMsg()
+
+  }
+
+  // display a success msg once form's been submitted
+  successMsg=()=>{
+    alert("form submitted successfully")
+
   }
 
 
@@ -55,7 +66,7 @@ class App extends Component {
 
 
   fetchData = async() =>{
-    let currentDate = "2020-11-26"
+   
   try{
 
      const result = await fetch(`https://purposecloud.s3.amazonaws.com/challenge-data.json`)
@@ -97,7 +108,7 @@ class App extends Component {
       <h1>Outdated Funds</h1>
       <form onSubmit={this.submitHandler}>
         <label htmlFor="date" aria-label="date">Date: </label>
-        <input type="date" id="date" name="date" onChange={this.handleDateChange} value={this.state.date} placeholder="type new date" required/>
+        <input type="date" min={currentDate} id="date" name="date" onChange={this.handleDateChange} value={this.state.date} placeholder="type new date" required/>
         <button type="submit">submit</button>
         {
           outdated.map((item,index) =>{
