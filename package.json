@@ -1,4 +1,4 @@
-{ 
+{
   "homepage": "https://Racheljjn.github.io/form",
   "name": "react-tech",
   "version": "0.1.0",
@@ -11,6 +11,7 @@
     "gh-pages": "^3.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-number-format": "^4.4.1",
     "react-scripts": "4.0.1",
     "web-vitals": "^0.2.4"
   },
