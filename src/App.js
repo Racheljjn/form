@@ -10,10 +10,9 @@ class App extends Component {
     super();
     this.state = {
       selected_fund_ID: "IGB",
-      date: "",
       outdated_fund_data: {},
-      original_fund_data: {},
-      input_data: {},
+      updated_fund_data: {},
+      date: "",
     };
   }
 
@@ -24,68 +23,66 @@ class App extends Component {
 
   handleDateChange = (e) => {
     e.preventDefault();
-    const outdated_fund_data = { ...this.state.outdated_fund_data };
-    const input_data = { ...this.state.input_data };
-    input_data["date"] = e.target.value;
-    // Object.keys(outdated_fund_data).map((key) => {
-    //   return (outdated_fund_data[key].date = e.target.value);
-    // });
-    this.setState({ date: e.target.value, outdated_fund_data, input_data });
+    const updated_fund_data = { ...this.state.updated_fund_data };
+    Object.keys(updated_fund_data).map((key) => {
+      return (updated_fund_data[key].date = e.target.value);
+    });
+    this.setState({ date: e.target.value, updated_fund_data });
   };
 
   handleAUMChange = (e, name, fundID) => {
     e.preventDefault();
-    const outdated_fund_data = { ...this.state.outdated_fund_data };
-    const input_data = { ...this.state.input_data };
-
-    outdated_fund_data[fundID].aum = Number(
+    const updated_fund_data = { ...this.state.updated_fund_data };
+    updated_fund_data[fundID].aum = Number(
       e.target.value.replace(/[^0-9\.]+/g, "")
     );
-    input_data[fundID].aum = Number(e.target.value.replace(/[^0-9\.]+/g, ""));
 
     this.setState({
       [name]: e.target.value,
-      outdated_fund_data,
-      input_data,
+      updated_fund_data,
     });
-    console.log(this.state.input_data);
   };
+
   handleNAVChange = (e, seriesID, selected_fund_ID) => {
     e.preventDefault();
-    const outdated_fund_data = { ...this.state.outdated_fund_data };
-    const input_data = { ...this.state.input_data };
-    outdated_fund_data[selected_fund_ID].series[seriesID] = Number(
-      e.target.value.replace(/[^0-9\.]+/g, "")
-    );
-    input_data[selected_fund_ID].series[seriesID] = Number(
+    const updated_fund_data = { ...this.state.updated_fund_data };
+    updated_fund_data[selected_fund_ID].series[seriesID] = Number(
       e.target.value.replace(/[^0-9\.]+/g, "")
     );
     this.setState({
       [e.target.name]: e.target.value,
-      outdated_fund_data,
-      input_data,
+      updated_fund_data,
     });
-    console.log(this.state.input_data);
   };
 
   submitHandler = (e) => {
     e.preventDefault();
-    let newObj = { ...this.state.input_data };
-
-    // newObj = { date: "2020-11-27", IGB: "30", IGB_A: "20", IGB_B: "10", MJJ: "60", MJJ_A: "30", MJJ_F: "20" }
-    axios
-      .post(`http://localhost/server/demo.php`, JSON.stringify(newObj))
-      .then((res) => console.log(res))
-      .catch((err) => {
-        console.log(err);
-      });
-
-    this.successMsg();
-  };
-
-  // display a success msg once form's been submitted
-  successMsg = () => {
-    alert("form submitted successfully");
+    let newObj = {};
+    for (let fund_item in this.state.updated_fund_data) {
+      if (
+        this.state.updated_fund_data[fund_item].hasOwnProperty("aum") ||
+        Object.keys(this.state.updated_fund_data[fund_item].series).length != 0
+      ) {
+        newObj[fund_item] = this.state.updated_fund_data[fund_item];
+      }
+    }
+    if (Object.keys(newObj).length === 0) {
+      alert("Can not submit empty form");
+    } else {
+      console.log(newObj);
+      axios
+        .post(`http://localhost/server/demo.php`, JSON.stringify(newObj))
+        .then((res) => {
+          if (res.status === 200) {
+            alert("form submitted!");
+          }
+        })
+        .catch((err) => {
+          if (err) {
+            alert("Oops, something went wrong! Maybe check your server...");
+          }
+        });
+    }
   };
 
   /***************************
@@ -135,63 +132,58 @@ class App extends Component {
           }
         }
       }
-      console.log(simplified_fund_data);
-      let outdated_fund_data = JSON.parse(JSON.stringify(simplified_fund_data));
-      let input_data = JSON.parse(JSON.stringify(simplified_fund_data));
-      Object.keys(input_data).map((key) => {
-        return (input_data[key] = {
+
+      let updated_fund_data = JSON.parse(JSON.stringify(simplified_fund_data));
+      Object.keys(updated_fund_data).map((key) => {
+        return (updated_fund_data[key] = {
           series: {},
-          name: outdated_fund_data[key].name,
-          aum: undefined,
+          name: simplified_fund_data[key].name,
         });
       });
-      console.log(input_data);
-      this.setState({ outdated_fund_data });
-      this.setState({ input_data });
-      this.setState({ original_fund_data: simplified_fund_data });
+
+      this.setState({
+        updated_fund_data,
+        outdated_fund_data: simplified_fund_data,
+      });
     } catch (err) {
       console.log(err);
     }
   };
 
   render() {
-    const {
-      outdated_fund_data,
-      original_fund_data,
-      selected_fund_ID,
-      date,
-    } = this.state;
+    const { outdated_fund_data, selected_fund_ID } = this.state;
 
     return (
       <div>
-        <h1>out-of-date data</h1>
-
+        <h1 className="title">
+          out-of-date fund{" "}
+          <span className="instructions">
+            (please note*: red numbers are stale numbers)
+          </span>
+        </h1>
         <form id="updated_form" onSubmit={this.submitHandler}>
           <main className="date_fund_AUM">
-            <section className="date">
-              <div className="date_picker">
-                <label htmlFor="date" aria-label="date">
-                  <span className="date_label">Date:</span>{" "}
-                </label>
-                <input
-                  type="date"
-                  min={current_date}
-                  id="date"
-                  name="date"
-                  onChange={this.handleDateChange}
-                  value={date}
-                />
-                <p className="outdated_date">
-                  {original_fund_data[selected_fund_ID]
-                    ? original_fund_data[selected_fund_ID].date
-                    : null}
-                </p>
-              </div>
-              <p className="instructions">
-                (please note* the red numbers are stale numbers)
+            <section className="date_picker">
+              <label htmlFor="date" aria-label="date">
+                <span className="date_label">Date:</span>{" "}
+              </label>
+              <input
+                type="date"
+                min={current_date}
+                id="date"
+                name="date"
+                onChange={this.handleDateChange}
+                value={this.state.date}
+              />
+              <p className="outdated_date">
+                {outdated_fund_data[selected_fund_ID]
+                  ? outdated_fund_data[selected_fund_ID].date
+                  : null}
+              </p>
+              <p className="current_fund">
+                Current Fund: {this.state.selected_fund_ID}
               </p>
             </section>
-
             <section className="fund_AUM">
               <div className="fund">
                 <label htmlFor="selection">Choose a fund:</label>
@@ -238,8 +230,8 @@ class App extends Component {
                               }}
                             />
                             <p className="outdated_AUM">
-                              {original_fund_data[fundID]
-                                ? original_fund_data[fundID].aum.toLocaleString(
+                              {outdated_fund_data[fundID]
+                                ? outdated_fund_data[fundID].aum.toLocaleString(
                                     "en-US",
                                     {
                                       style: "currency",
@@ -266,7 +258,7 @@ class App extends Component {
                         return (
                           <div className="series">
                             <li className="seriesID" key={index}>
-                              Series: {seriesID}
+                              Series: {seriesID} - NAV:
                             </li>
                             <NumberFormat
                               className="nav_input"
@@ -274,7 +266,7 @@ class App extends Component {
                               prefix={"$"}
                               displayType="number"
                               name={`${fundID}_${seriesID}`}
-                              value={this.state.index}
+                              value={this.state[`${fundID}_${seriesID}`]}
                               onChange={(e) => {
                                 this.handleNAVChange(
                                   e,
@@ -286,8 +278,8 @@ class App extends Component {
                             <li className="outdated_NAV">
                               {" "}
                               $
-                              {original_fund_data[fundID]
-                                ? original_fund_data[fundID].series[seriesID]
+                              {outdated_fund_data[fundID]
+                                ? outdated_fund_data[fundID].series[seriesID]
                                 : null}
                             </li>
                           </div>
